@@ -41,7 +41,7 @@ export default function QuickChat() {
 
     const userMessage = input.trim();
     setInput('');
-    const newMessages = [...messages, { role: 'user', content: userMessage }];
+    const newMessages = [...messages.filter(m => m.role !== 'error'), { role: 'user', content: userMessage }];
     setMessages(newMessages);
     setSending(true);
 

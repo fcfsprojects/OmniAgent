@@ -1,8 +1,32 @@
-import { BaseProvider } from './base-provider.js';
+import { BaseProvider, ProviderError } from './base-provider.js';
 
 export class GoogleProvider extends BaseProvider {
   constructor(config) {
     super(config);
+  }
+
+  async streamChat(messages, options) {
+    const endpoint = this.config.endpoints.streaming || this.config.endpoints.chat;
+    const url = this.buildUrl(endpoint, options.model);
+    const headers = this.buildHeaders(this._apiKey);
+    const body = this.transformRequest(messages, { ...options, stream: false });
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new ProviderError(
+        `${this.name} API error (${response.status}): ${errorBody}`,
+        response.status,
+        this.name,
+      );
+    }
+
+    return response;
   }
 
   transformRequest(messages, options) {

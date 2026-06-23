@@ -27,7 +27,8 @@ export function createAgent(data) {
 
 export function getAgent(id) {
   const agent = agents.get(id);
-  return agent || null;
+  if (!agent) return null;
+  return sanitizeAgent(agent);
 }
 
 export function getAgentWithKey(id) {

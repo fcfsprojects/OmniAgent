@@ -16,12 +16,13 @@ export function createProvider(providerId, apiKey, customBaseUrl) {
     throw new ProviderError(`Unknown provider: ${providerId}`, 400, providerId);
   }
 
-  if (customBaseUrl && config.allowCustomBaseUrl) {
-    config.baseUrl = customBaseUrl;
+  const effectiveConfig = { ...config };
+  if (customBaseUrl && effectiveConfig.allowCustomBaseUrl) {
+    effectiveConfig.baseUrl = customBaseUrl;
   }
 
   const ProviderClass = PROVIDER_CLASSES[providerId] || BaseProvider;
-  const provider = new ProviderClass(config);
+  const provider = new ProviderClass(effectiveConfig);
   provider.setApiKey(apiKey);
   return provider;
 }
