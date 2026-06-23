@@ -1,0 +1,26 @@
+{
+  "name": "omni-agent",
+  "version": "1.0.0",
+  "description": "Universal AI Agent Framework - Deploy AI agents with any provider, any model, any endpoint, any hosting",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "npm run dev --workspace=backend",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "build": "npm run build --workspace=frontend && npm run build --workspace=backend",
+    "build:apk": "npm run build:apk --workspace=frontend",
+    "start": "npm run start --workspace=backend",
+    "lint": "npm run lint --workspace=backend && npm run lint --workspace=frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,14 @@
+{
+  "appId": "com.omniagent.app",
+  "appName": "OmniAgent",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "buildOptions": {
+      "keystorePath": null,
+      "keystoreAlias": null
+    }
+  }
+}
