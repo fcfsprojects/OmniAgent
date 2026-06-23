@@ -47,6 +47,7 @@ export function updateAgent(id, data) {
 
   for (const field of updatable) {
     if (data[field] !== undefined) {
+      if (field === 'apiKey' && data[field] === '') continue;
       agent[field] = data[field];
     }
   }

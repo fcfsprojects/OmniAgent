@@ -111,6 +111,7 @@ router.post('/conversations/:id/stream', async (req, res, next) => {
     const reader = streamResponse.body.getReader();
     const decoder = new TextDecoder();
     let fullContent = '';
+    let lineBuffer = '';
 
     try {
       while (true) {
@@ -120,17 +121,18 @@ router.post('/conversations/:id/stream', async (req, res, next) => {
         const chunk = decoder.decode(value, { stream: true });
         res.write(chunk);
 
-        const lines = chunk.split('\n').filter(l => l.startsWith('data: ') || l.startsWith('{'));
+        lineBuffer += chunk;
+        const parts = lineBuffer.split('\n');
+        lineBuffer = parts.pop();
+
+        const lines = parts.filter(l => l.startsWith('data: ') || l.startsWith('{'));
         for (const line of lines) {
           const data = line.startsWith('data: ') ? line.slice(6) : line;
           if (data === '[DONE]') continue;
           try {
             const parsed = JSON.parse(data);
-            // OpenAI-compatible format
             const openaiDelta = parsed.choices?.[0]?.delta?.content || '';
-            // Anthropic format
             const anthropicDelta = parsed.delta?.text || '';
-            // Google format (array of candidates)
             const googleDelta = parsed.candidates?.[0]?.content?.parts?.[0]?.text || '';
             fullContent += openaiDelta || anthropicDelta || googleDelta;
           } catch {
@@ -149,7 +151,12 @@ router.post('/conversations/:id/stream', async (req, res, next) => {
     res.write('data: [DONE]\n\n');
     res.end();
   } catch (err) {
-    next(err);
+    if (!res.headersSent) {
+      next(err);
+    } else {
+      logger.error('Stream error after headers sent:', { message: err.message, stack: err.stack });
+      res.end();
+    }
   }
 });
 

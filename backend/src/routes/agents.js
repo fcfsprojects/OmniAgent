@@ -16,6 +16,10 @@ router.post('/', (req, res) => {
     return res.status(400).json({ error: 'provider, model, and apiKey are required' });
   }
 
+  if (provider === 'custom' && !customBaseUrl) {
+    return res.status(400).json({ error: 'customBaseUrl is required for custom provider' });
+  }
+
   const agent = createAgent({
     name, description, provider, model, apiKey,
     customBaseUrl, systemPrompt, temperature, maxTokens, topP, tools,

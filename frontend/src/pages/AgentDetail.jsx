@@ -36,6 +36,7 @@ export default function AgentDetail() {
     setForm(prev => ({
       ...prev,
       [name]: name === 'temperature' ? parseFloat(value) : name === 'maxTokens' ? parseInt(value, 10) : value,
+      ...(name === 'provider' ? { model: '' } : {}),
     }));
     setSuccess(false);
   }
